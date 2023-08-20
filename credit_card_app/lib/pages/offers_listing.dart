@@ -108,15 +108,6 @@ class OfferListingScreen extends StatelessWidget {
                 Text('Gecikme Faizi: ${offer.overdueInterest}'),
                 Text('Nakit Avans Faizi: ${offer.cashAdvanceInterest}'),
                 const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () => _launchURL(offer.url),
-                  child: const Text(
-                    'Şimdi Başvur',
-                    style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
                 Text('Aktif: ${offer.active ? 'Evet' : 'Hayır'}'),
                 Text('Puan: ${offer.rating}'),
                 const SizedBox(height: 10),
@@ -130,6 +121,50 @@ class OfferListingScreen extends StatelessWidget {
               child: const Text('Kapat'),
               onPressed: () {
                 Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Şimdi Başvur'),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Şimdi Başvur'),
+                      content: const Text(
+                          'Bu linki uygulama içinde mi yoksa tarayıcıda mı açmak istersiniz?',
+                          textAlign: TextAlign.center),
+                      actions: [
+                        TextButton(
+                          child: const Text('Uygulamada'),
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            if (await canLaunchUrl(Uri.parse(offer.url))) {
+                              // Open in the default webview
+                              await launchUrl(
+                                Uri.parse(offer.url),
+                              );
+                            }
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Tarayıcıda'),
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            if (await canLaunchUrl(
+                              Uri.parse(offer.url),
+                            )) {
+                              await launchUrl(
+                                Uri.parse(offer.url),
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ],
@@ -156,13 +191,5 @@ class OfferListingScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  _launchURL(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }
