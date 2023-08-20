@@ -1,4 +1,4 @@
-import 'package:credit_card_app/credit_card_preference_form.dart';
+import 'package:credit_card_app/pages/credit_card_preference_form.dart';
 import 'package:flutter/material.dart';
 
 void main() {

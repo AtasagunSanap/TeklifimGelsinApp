@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'models/credit_card_model.dart';
-import 'models/credit_card_response_model.dart';
+import '../models/credit_card_model.dart';
+import '../models/credit_card_response_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OfferListingScreen extends StatelessWidget {

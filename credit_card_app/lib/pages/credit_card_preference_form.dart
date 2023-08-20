@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'globals.dart';
-import 'models/credit_card_response_model.dart';
-import 'offer_listing_screen.dart';
-import 'utils.dart';
+import '../globals.dart';
+import '../models/credit_card_response_model.dart';
+import 'offers_listing.dart';
+import '../utils.dart';
 
 enum SelectionType { Age, SpendingHabit, Expectation }
 
