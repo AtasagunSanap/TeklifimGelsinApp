@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-
 import 'globals.dart';
-import 'models.dart';
+import 'models/credit_card_response_model.dart';
 import 'offer_listing_screen.dart';
 import 'utils.dart';
 
 enum SelectionType { Age, SpendingHabit, Expectation }
 
 class CreditCardPreferenceForm extends StatefulWidget {
+  const CreditCardPreferenceForm({super.key});
+
   @override
-  _CreditCardPreferenceFormState createState() =>
-      _CreditCardPreferenceFormState();
+  CreditCardPreferenceFormState createState() =>
+      CreditCardPreferenceFormState();
 }
 
-class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
+class CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
   late PageController _pageController;
   int _currentPage = 0;
   String selectedAge = "";
@@ -36,20 +37,7 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: _currentPage != 0
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  _pageController.previousPage(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.ease);
-                  setState(() {
-                    _currentPage--;
-                  });
-                },
-              )
-            : null,
-        title: const Text('Credit Card Preference'),
+        title: const Text('Kredi Kartı Tercih Formu'),
       ),
       body: PageView(
         controller: _pageController,
@@ -68,26 +56,24 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (_currentPage != 0)
-              FloatingActionButton(
-                heroTag: "back_button",
-                child: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  _pageController.previousPage(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.ease);
-                  setState(() {
-                    _currentPage--;
-                  });
-                },
-              )
-            else
-              const SizedBox(),
+            _currentPage != 0
+                ? FloatingActionButton(
+                    heroTag: "back_button",
+                    child: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      _pageController.previousPage(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.ease);
+                      setState(() {
+                        _currentPage--;
+                      });
+                    },
+                  )
+                : const SizedBox(),
             FloatingActionButton(
               heroTag: "next_button",
-              child: _currentPage != 2
-                  ? const Icon(Icons.arrow_forward)
-                  : const Icon(Icons.check),
+              child:
+                  Icon(_currentPage != 2 ? Icons.arrow_forward : Icons.check),
               onPressed: () async {
                 if (_currentPage == 0 && selectedAge.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -122,6 +108,12 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
                     _currentPage++;
                   });
                 } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Kredi kartı teklifleri yükleniyor..."),
+                      duration: Duration(seconds: 10),
+                    ),
+                  );
                   CreditCardResponse creditCardResponse =
                       await fetchCreditCardOffers(
                     age: ageRange.indexOf(selectedAge) + 1,
@@ -133,6 +125,9 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
                             creditCardExpectations.indexOf(expectation) + 1)
                         .toList(),
                   );
+
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
                   // ignore: use_build_context_synchronously
                   Navigator.push(
@@ -152,10 +147,7 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
     );
   }
 
-  Widget _buildCard(
-    String title,
-    Widget content,
-  ) {
+  Widget _buildCard(String title, Widget content) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -174,13 +166,13 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
     );
   }
 
-  List<Widget> _createSegmentedButtons(List<String> items,
-      Function(String) onSelect, int chunkSize, SelectionType type) {
+  List<Widget> _createSegmentedButtons(
+      List<String> items, Function(String) onSelect, SelectionType type) {
     List<Widget> buttons = [];
 
-    for (int i = 0; i < items.length; i += chunkSize) {
-      List<String> currentChunk = items.sublist(
-          i, i + chunkSize > items.length ? items.length : i + chunkSize);
+    for (int i = 0; i < items.length; i += 2) {
+      List<String> currentChunk =
+          items.sublist(i, i + 2 > items.length ? items.length : i + 2);
 
       buttons.add(
         Row(
@@ -217,24 +209,36 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                           (Set<MaterialState> states) {
                         if (type == SelectionType.Age) {
-                          return isSelected ? Colors.blue : Colors.grey[200]!;
+                          return isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.primaryContainer;
                         } else if (type == SelectionType.SpendingHabit) {
                           return badgeNumber != null
-                              ? Colors.blue
-                              : Colors.grey[200]!;
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.primaryContainer;
                         } else if (type == SelectionType.Expectation) {
                           return badgeNumber != null
-                              ? Colors.blue
-                              : Colors.grey[200]!;
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.primaryContainer;
                         } else {
-                          return Colors.grey[200]!;
+                          return Theme.of(context).colorScheme.primaryContainer;
                         }
                       }),
                       foregroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
-                          return badgeNumber != null
-                              ? Colors.white
-                              : Colors.black;
+                          if (type == SelectionType.Age) {
+                            return isSelected ? Colors.white : Colors.black;
+                          } else if (type == SelectionType.SpendingHabit) {
+                            return badgeNumber != null
+                                ? Colors.white
+                                : Colors.black;
+                          } else if (type == SelectionType.Expectation) {
+                            return badgeNumber != null
+                                ? Colors.white
+                                : Colors.black;
+                          } else {
+                            return Colors.white;
+                          }
                         },
                       ),
                     ),
@@ -251,11 +255,11 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
                     top: 0,
                     child: CircleAvatar(
                       radius: 12,
-                      backgroundColor: Colors.red,
+                      backgroundColor: Theme.of(context).colorScheme.onSurface,
                       child: Text(
                         badgeNumber.toString(),
                         style:
-                            const TextStyle(fontSize: 10, color: Colors.white),
+                            const TextStyle(fontSize: 12, color: Colors.white),
                       ),
                     ),
                   ),
@@ -278,7 +282,7 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
           setState(() {
             selectedAge = age;
           });
-        }, 2, SelectionType.Age),
+        }, SelectionType.Age),
       ],
     );
   }
@@ -295,7 +299,7 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
               spendingHabitOrder.add(habit);
             }
           });
-        }, 2, SelectionType.SpendingHabit),
+        }, SelectionType.SpendingHabit),
       ],
     );
   }
@@ -313,7 +317,7 @@ class _CreditCardPreferenceFormState extends State<CreditCardPreferenceForm> {
               expectationOrder.add(expectation);
             }
           });
-        }, 2, SelectionType.Expectation),
+        }, SelectionType.Expectation),
       ],
     );
   }

@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-
 import 'globals.dart';
-import 'models.dart';
+import 'models/credit_card_response_model.dart';
 
 List<int> _generateReversedFibonacci(int length) {
   if (length <= 0) return [];
@@ -53,7 +51,6 @@ Future<CreditCardResponse> fetchCreditCardOffers({
     creditCardOrderFib[option] = creditCardFibSequence[i];
   }
 
-  // Build your desired JSON format
   // merge two maps and age
   Map<String, dynamic> data = {
     'age': age,
@@ -62,24 +59,19 @@ Future<CreditCardResponse> fetchCreditCardOffers({
   };
 
   final response = await http.post(
-    Uri.parse('https://prepi.teklifimgelsin.com/api/prep/createCardPost'),
+    Uri.parse('${websiteUrl}api/prep/createCardPost'),
     headers: {
       'Content-Type': 'application/json',
     },
     body: jsonEncode(data),
   );
 
-  // Handle the server response
   if (response.statusCode == 200) {
-    // Assuming the server sends a list of offers
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
     final CreditCardResponse cardResponse =
         CreditCardResponse.fromJson(jsonResponse);
     return cardResponse;
-
-    // Navigate to OfferListingScreen or update your UI
   } else {
-    // Handle error or show a message to the user
     throw Exception('Failed to load offers');
   }
 }

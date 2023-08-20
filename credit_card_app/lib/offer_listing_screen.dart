@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'models.dart';
+import 'models/credit_card_model.dart';
+import 'models/credit_card_response_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OfferListingScreen extends StatelessWidget {
@@ -14,24 +15,24 @@ class OfferListingScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Credit Card Offers"),
+          title: const Text("Kredi Kartı Teklifleri"),
           bottom: const TabBar(
             tabs: [
               Tab(
                 key: Key("active_tab"),
-                text: "Active",
+                text: "Aktif",
                 icon: Icon(Icons.local_activity),
                 iconMargin: EdgeInsets.zero,
               ),
               Tab(
                 key: Key("passive_tab"),
-                text: "Passive",
+                text: "Pasif",
                 icon: Icon(Icons.local_offer),
                 iconMargin: EdgeInsets.zero,
               ),
               Tab(
                 key: Key("sponsored_tab"),
-                text: "Sponsored",
+                text: "Sponsorlu",
                 icon: Icon(Icons.star),
                 iconMargin: EdgeInsets.zero,
               ),
@@ -74,7 +75,7 @@ class OfferListingScreen extends StatelessWidget {
             ],
           ),
           title: Text(offer.cardName),
-          subtitle: Text("Rating: ${offer.rating}"),
+          subtitle: Text("Puan: ${offer.rating}"),
           onTap: () => _showDetailsDialog(context, offer),
         );
       },
@@ -90,38 +91,43 @@ class OfferListingScreen extends StatelessWidget {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Image.network(
-                  offer.imgUrl,
-                  fit: BoxFit.cover,
-                  width: 100,
-                  height: 100,
+                GestureDetector(
+                  onTap: () {
+                    _showFullScreenImage(context, offer.imgUrl);
+                  },
+                  child: Image.network(
+                    offer.imgUrl,
+                    fit: BoxFit.cover,
+                    width: 100,
+                    height: 100,
+                  ),
                 ),
                 const SizedBox(height: 10),
-                Text('Annual Payment: ${offer.annualPayment}'),
-                Text('Shopping Interest: ${offer.shoppingInterest}'),
-                Text('Overdue Interest: ${offer.overdueInterest}'),
-                Text('Cash Advance Interest: ${offer.cashAdvanceInterest}'),
+                Text('Yıllık Ödeme: ${offer.annualPayment}'),
+                Text('Alışveriş Faizi: ${offer.shoppingInterest}'),
+                Text('Gecikme Faizi: ${offer.overdueInterest}'),
+                Text('Nakit Avans Faizi: ${offer.cashAdvanceInterest}'),
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () => _launchURL(offer.url),
                   child: const Text(
-                    'Apply Now',
+                    'Şimdi Başvur',
                     style: TextStyle(
                         color: Colors.blue,
                         decoration: TextDecoration.underline),
                   ),
                 ),
-                Text('Active: ${offer.active ? 'Yes' : 'No'}'),
-                Text('Rating: ${offer.rating}'),
+                Text('Aktif: ${offer.active ? 'Evet' : 'Hayır'}'),
+                Text('Puan: ${offer.rating}'),
                 const SizedBox(height: 10),
-                Text('Campaigns: ${offer.campaigns.join(', ')}'),
-                Text('Categories: ${offer.categories.join(', ')}'),
+                Text('Kampanyalar: ${offer.campaigns.join(', ')}'),
+                Text('Kategoriler: ${offer.categories.join(', ')}'),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Close'),
+              child: const Text('Kapat'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -129,6 +135,26 @@ class OfferListingScreen extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // to take full screen height
+      builder: (context) => GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
     );
   }
 
