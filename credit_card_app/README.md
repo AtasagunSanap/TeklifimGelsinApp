@@ -1,16 +1,34 @@
-# credit_card_app
+# Kredi Kartı Teklifleri Uygulaması
 
-A new Flutter project.
+Bu uygulama, kullanıcılara çeşitli kredi kartı teklifleri sunar. Teklifler aktif, pasif ve sponsorlu olmak üzere üç kategoriye ayrılmıştır.
 
-## Getting Started
+## Özellikler
 
-This project is a starting point for a Flutter application.
+- Aktif, Pasif ve Sponsorlu tekliflerin görüntülenmesi.
+- Her kredi kartı teklifinin detaylı bilgilerini görüntüleme.
+- Kredi kartı tekliflerine dair resimleri tam ekran görüntüleme.
+- Her teklife dair URL bağlantısını varsayılan tarayıcıda veya uygulama içerisinde açma.
 
-A few resources to get you started if this is your first Flutter project:
+## Kurulum
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Projeyi yerel makinenize kopyalayın:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+git clone <repo-linki>
+```
+
+2. Bağımlılıkları yükleyin:
+
+```bash
+flutter pub get
+```
+
+3. Uygulamayı başlatın:
+
+```bash
+flutter run
+```
+
+## Kullanım
+
+Ana ekranda üç farklı kategori altında listelenen kredi kartı tekliflerini görebilirsiniz. Bir teklife tıkladığınızda, teklifin detaylarını, resmini ve ilgili URL bağlantısını görebilirsiniz.
